@@ -1,42 +1,27 @@
 [
     {
         "role": "owner",
-        "name": "EvilEmperium",
-        "link": "https://www.youtube.com/@EvilEmperium"
+        "name": "List Owner",
+        "link": "https://www.youtube.com/@Prometheus_Alt"
     },
     {
-        "role": "owner",
-        "name": "YeckGrinding",
-        "link": "https://www.youtube.com/channel/UCtjjVATQCQYCcW_9hI3qmng"
-    },
-    {
-        "role": "helper",
-        "name": "ShadowAxeKid",
-        "link": "https://www.youtube.com/@ShadowAxeKid"
+        "role": "admin",
+        "name": "List Admin",
+        "link": "https://www.youtube.com/@Prometheus_Alt"
     },
     {
         "role": "helper",
-        "name": "XBladeXGMD",
-        "link": "https://www.youtube.com/channel/UCxx5Oiz05nRnf4hYhGSgg_A"
+        "name": "List Helper",
+        "link": "https://www.youtube.com/@Prometheus_Alt"
     },
     {
-        "role": "helper",
-        "name": "cinder block",
-        "link": "https://www.youtube.com/channel/UC5wBYQU7R-uZq2nj_Jb52ww"
-    },
-    {
-        "role": "helper",
-        "name": "DeepStrider2",
-        "link": "https://www.youtube.com/@deepstrider2"
+        "role": "trial",
+        "name": "Trial List Helper",
+        "link": "https://www.youtube.com/@Prometheus_Alt"
     },
     {
         "role": "dev",
-        "name": "Prometheus",
-        "link": "https://www.youtube.com/c/PrometheusAlt"
-    },
-    {
-        "role": "dev",
-        "name": "Emonadeo",
-        "link": "https://github.com/Emonadeo"
+        "name": "List Coder",
+        "link": "https://www.youtube.com/@Prometheus_Alt"
     }
 ]
