@@ -1,5 +1,2 @@
-.idea/
-.vscode/
-deno.json
-
-node_modules/
+# thank you mac!
+.DS_Store
