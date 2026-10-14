@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Applies reduce-motion and the saved accent color before first paint, so a returning visitor's choices don't flash — see js/settings.js's file header. Accent preset values duplicated here (ACCENT_PRESETS lives in js/settings.js) since this must run before any script tag loads. -->
+<script>try{var s=JSON.parse(localStorage.getItem('gddl_settings_v1')||'{}');if(s.reduceMotion)document.documentElement.setAttribute('data-reduce-motion','true');var A={red:['#ef4444','#dc2626','#ffffff'],orange:['#ff6e00','#e66300','#1a0d00'],yellow:['#eab308','#ca8a04','#1a1300'],green:['#22c55e','#16a34a','#ffffff'],blue:['#3b82f6','#2563eb','#ffffff'],pink:['#ec4899','#db2777','#ffffff']};var a=A[s.accentColor]||A.orange;var rs=document.documentElement.style;rs.setProperty('--primary',a[0]);rs.setProperty('--primary-dark',a[1]);rs.setProperty('--primary-on',a[2]);}catch(e){}</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demonlist</title>
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/detail.css">
+</head>
+<body>
+
+<div class="detail-bg" id="detail-bg" aria-hidden="true"></div>
+
+<header class="site-header">
+  <a href="index.html" class="brand" style="cursor:pointer;">
+    <img class="brand-mark" src="assets/logo.png" width="32" height="32" alt="">
+    <span class="brand-text">DEMONLIST<span>Verifier vs. showcase</span></span>
+  </a>
+  <div class="header-actions" id="header-actions"></div>
+</header>
+
+<main class="page" id="detail-root"></main>
+
+<p class="footer-note">
+  &copy; 2026 &middot; Not affiliated with RobTop Games, Geometry Dash, or AREDL.
+</p>
+
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/api-aredl.js"></script>
+<script src="js/data-source.js"></script>
+<script src="js/shared-cache.js"></script>
+<script src="js/position-history.js"></script>
+<script src="js/cache-admin-ui.js"></script>
+<script src="js/nav-actions.js"></script>
+<script src="js/toast.js"></script>
+<script src="js/completion.js"></script>
+<script src="js/records-index.js"></script>
+<script src="js/aredl-sync.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/detail.js"></script>
+<script src="js/shortcuts.js"></script>
+</body>
+</html>

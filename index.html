@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Applies reduce-motion and the saved accent color before first paint, so a returning visitor's choices don't flash — see js/settings.js's file header. Accent preset values duplicated here (ACCENT_PRESETS lives in js/settings.js) since this must run before any script tag loads. -->
+<script>try{var s=JSON.parse(localStorage.getItem('gddl_settings_v1')||'{}');if(s.reduceMotion)document.documentElement.setAttribute('data-reduce-motion','true');var A={red:['#ef4444','#dc2626','#ffffff'],orange:['#ff6e00','#e66300','#1a0d00'],yellow:['#eab308','#ca8a04','#1a1300'],green:['#22c55e','#16a34a','#ffffff'],blue:['#3b82f6','#2563eb','#ffffff'],pink:['#ec4899','#db2777','#ffffff']};var a=A[s.accentColor]||A.orange;var rs=document.documentElement.style;rs.setProperty('--primary',a[0]);rs.setProperty('--primary-dark',a[1]);rs.setProperty('--primary-on',a[2]);}catch(e){}</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demonlist | Home</title>
+<meta name="description" content="An AREDL-powered Geometry Dash extreme demon list, with verifier vs. showcase view counts.">
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/list.css">
+<link rel="stylesheet" href="css/home.css">
+</head>
+<body class="home-page">
+
+<header class="site-header">
+  <div class="brand">
+    <img class="brand-mark" src="assets/logo.png" width="32" height="32" alt="">
+    <span class="brand-text">DEMONLIST<span>Verifier vs. showcase</span></span>
+  </div>
+  <div class="header-actions" id="header-actions"></div>
+</header>
+
+<main class="page">
+  <section class="home-hero">
+    <h1>Demonlist</h1>
+    <p>An extreme demon list, with showcases tracked.</p>
+    <div class="home-cta-row">
+      <a class="btn-primary" href="list.html">View the list &rarr;</a>
+      <a class="btn-ghost" href="stats.html">See the stats</a>
+    </div>
+    <div class="home-stat-strip">
+      <div class="home-stat"><span class="num" id="home-stat-total">—</span><span>Tracked levels</span></div>
+      <div class="home-stat"><span class="num" id="home-stat-completed">—</span><span>You've beaten</span></div>
+    </div>
+  </section>
+
+  <section class="home-spotlight-row">
+    <article class="home-spotlight home-spotlight-crown" aria-label="Current #1">
+      <div class="home-spotlight-head">
+        <span class="home-spotlight-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8z"/></svg>
+        </span>
+        <span class="home-spotlight-label">Current #1</span>
+      </div>
+      <div id="spotlight-top-body">
+        <div class="demon-card skeleton-card" aria-hidden="true"><div class="skeleton card-thumb-wrap"></div></div>
+      </div>
+    </article>
+    <article class="home-spotlight home-spotlight-featured" aria-label="Featured today">
+      <div class="home-spotlight-head">
+        <span class="home-spotlight-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.2H22l-6 4.6 2.3 7.2-6.3-4.6-6.3 4.6 2.3-7.2-6-4.6h7.6z"/></svg>
+        </span>
+        <span class="home-spotlight-label">Featured today</span>
+        <span class="home-spotlight-date" id="spotlight-featured-date"></span>
+      </div>
+      <div id="spotlight-featured-body">
+        <div class="demon-card skeleton-card" aria-hidden="true"><div class="skeleton card-thumb-wrap"></div></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="home-changes-card">
+    <div class="home-changes-head">
+      <h2>Recent changes</h2>
+      <p>Recent movement in the top <span class="mono">150</span>.</p>
+    </div>
+    <ul class="home-changes-list" id="home-changes-list">
+      <li class="chart-empty">Loading…</li>
+    </ul>
+  </section>
+
+  <section class="home-changes-card">
+    <div class="home-changes-head">
+      <h2>On this day</h2>
+      <p>Same date, past years.</p>
+    </div>
+    <ul class="home-otd-list" id="home-otd-list">
+      <li class="chart-empty">Loading…</li>
+    </ul>
+  </section>
+
+  <section class="home-roulette-teaser">
+    <div>
+      <h2>Think you can climb the list?</h2>
+      <p>Play Extreme Demon Roulette — random levels, 1% harder each one you clear.</p>
+    </div>
+    <a class="btn-primary" href="roulette.html">Start a run &rarr;</a>
+  </section>
+</main>
+
+<p class="footer-note">
+  &copy; 2026 &middot; Not affiliated with RobTop Games, Geometry Dash, or AREDL.
+</p>
+
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/api-aredl.js"></script>
+<script src="js/shared-cache.js"></script>
+<script src="js/position-history.js"></script>
+<script src="js/nav-actions.js"></script>
+<script src="js/toast.js"></script>
+<script src="js/completion.js"></script>
+<script src="js/records-index.js"></script>
+<script src="js/aredl-sync.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/home.js"></script>
+<script src="js/shortcuts.js"></script>
+</body>
+</html>
