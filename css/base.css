@@ -1,0 +1,853 @@
+/* =====================================================================
+   BASE — design tokens, reset, shared layout
+
+   Palette/type pulled from AREDL's own production site (aredl.net) — its
+   compiled Tailwind CSS exposes its real shadcn/ui theme tokens
+   (--primary, --card, --border, --muted, etc. as literal HSL triples),
+   so these aren't a guess: --primary is hsl(26,100%,50%) = #ff6e00, body
+   text is near-white neutral gray (not a hue-tinted "text-mid"), cards
+   are flat hsl(0,0%,15%) with no color cast, radius is 0.5rem, and the
+   page background is a barely-there near-black radial
+   (#191919 -> #0a0a0a), not a colored gradient. Converted to hex here
+   since this site doesn't otherwise use Tailwind/HSL vars.
+
+   Type is its own departure from AREDL's actual site (which uses
+   Poppins/Inter) rather than a match — those read as the generic
+   default of every templated SaaS/AI-generated page, which fights the
+   "extreme demon" gaming identity this list is actually going for.
+   Chakra Petch (angled, technical cuts) carries headings/numbers/the
+   brand wordmark; Manrope (a plainer geometric-humanist face, but not
+   one of the handful of faces every auto-generated site reaches for)
+   carries body text.
+   ===================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* --- color: AREDL's own neutral-gray + single-orange-accent system --- */
+  --bg-void:      #0a0a0a;
+  --bg-base:      #1b1a1e;
+  --bg-surface:   #262626;
+  --bg-surface-2: #333333;
+  --line:         #404040;
+  --line-soft:    #333333;
+
+  --text-hi:      #e6e6e6;
+  --text-mid:     #999999;
+  --text-dim:     #6b6b6b;
+
+  --primary:      #ff6e00; /* AREDL's brand orange — the one spot color */
+  --primary-dark: #e66300;
+  --gold:         #ffcf4a; /* view-count "winner" highlight only */
+  --danger:       #ff5a5a;
+
+  /* Difficulty color per level is computed continuously (positionColor()
+     in js/utils.js, from POSITION_COLOR_STOPS — gray -> orange as position
+     climbs) rather than sorted into a handful of CSS-variable buckets, so
+     it doesn't have discrete steps here. --tier-color is set inline per
+     card/detail-page with that computed value; both consume it the same
+     way regardless of where the color came from. */
+
+  --radius: 8px;
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.25);
+}
+
+* { box-sizing: border-box; }
+html { color-scheme: dark; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg-base);
+  background-image: radial-gradient(circle at 24% 69%, #191919 0%, var(--bg-void) 99%);
+  background-attachment: fixed;
+  color: var(--text-hi);
+  font-family: 'Manrope', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+h1, h2, h3, .num {
+  font-family: 'Chakra Petch', system-ui, sans-serif;
+  font-weight: 700;
+  margin: 0;
+}
+
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; }
+
+a { color: inherit; text-decoration: none; }
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+/* Form controls don't inherit the body font by default in the UA
+   stylesheet (buttons do, above) — without this, <select>/<input>
+   fall back to the browser's system UI font instead of matching the
+   rest of the page's text. */
+input, select, textarea { font-family: inherit; }
+
+img { max-width: 100%; display: block; }
+
+::selection { background: var(--primary); color: var(--primary-on, #1a0d00); }
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* --- reduced motion --- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+/* Same effect, opted into manually (Settings.set('reduceMotion', true))
+   rather than inherited from the OS — for anyone who wants it here
+   specifically without changing a system-wide setting. */
+:root[data-reduce-motion="true"] *,
+:root[data-reduce-motion="true"] *::before,
+:root[data-reduce-motion="true"] *::after {
+  animation-duration: 0.01ms !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* =====================================================================
+   SITE HEADER
+   ===================================================================== */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px clamp(16px, 4vw, 40px);
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-mark { flex-shrink: 0; display: block; border-radius: 6px; transition: transform .25s cubic-bezier(.34,1.56,.64,1); }
+.brand:hover .brand-mark { transform: rotate(-8deg) scale(1.08); }
+
+.brand-text {
+  font-family: 'Chakra Petch', system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+.brand-text span {
+  display: block;
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--text-mid);
+  background: var(--bg-surface);
+  transition: color .15s, border-color .15s, transform .15s;
+}
+.icon-btn:hover { color: var(--text-hi); border-color: var(--text-dim); transform: translateY(-1px); }
+.icon-btn:active { transform: scale(.92); }
+.icon-btn:disabled { opacity: .6; cursor: default; transform: none; }
+
+.icon-spin { animation: icon-spin 0.9s linear infinite; }
+@keyframes icon-spin { to { transform: rotate(360deg); } }
+
+.refresh-btn-wrap { position: relative; display: inline-flex; }
+
+.refresh-status {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 50;
+  min-width: 220px;
+  max-width: 300px;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.45;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-surface);
+  color: var(--text-mid);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity .15s, transform .15s;
+}
+.refresh-status.visible { opacity: 1; transform: translateY(0); }
+.refresh-status.error { border-color: #5c2233; color: #ffb4c6; background: #1f1215; }
+
+/* =====================================================================
+   SHARED: page shell / states
+   ===================================================================== */
+
+.page {
+  position: relative;
+  z-index: 1; /* stack above .detail-bg (level.html) — no effect on pages without one */
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px clamp(16px, 4vw, 40px) 80px;
+}
+
+.state-banner {
+  border: 1px solid var(--line);
+  background: var(--bg-surface);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  font-size: 13px;
+  color: var(--text-mid);
+  margin-bottom: 16px;
+}
+.state-banner.error { border-color: #5c2233; color: #ffb4c6; background: #1f1215; }
+.state-banner a { color: var(--primary); text-decoration: underline; text-underline-offset: 2px; }
+
+.skeleton {
+  background: linear-gradient(100deg, var(--bg-surface) 30%, var(--bg-surface-2) 50%, var(--bg-surface) 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s infinite;
+  border-radius: var(--radius);
+}
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+/* Generic "nothing to show" state for any list/panel — moved here from
+   css/stats.css since js/home.js and js/roulette.js also use it (on
+   pages that don't load stats.css at all, which left it unstyled
+   there — a real bug, not by design; centralizing here instead of
+   copy-pasting the same rule into every page's own stylesheet). */
+.chart-empty {
+  padding: 40px 0;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.eyebrow {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid var(--line);
+  color: var(--text-mid);
+  background: var(--bg-surface-2);
+  text-decoration: none;
+}
+
+/* A person's name linking to their other levels (list.html#q=<name>,
+   see profileLink() in js/utils.js) — the detail page's verifier/
+   publisher fact values and creator chips alike. */
+a.profile-link:not(.chip) { color: inherit; text-decoration: none; transition: color .15s; }
+a.profile-link:not(.chip):hover { color: var(--primary); text-decoration: underline; }
+a.chip.profile-link:hover { color: var(--primary); border-color: var(--primary); }
+
+/* A level placed into the tracked top 150 within the last week (see
+   AredlAPI.fetchNewLevelIds()) — shared look wherever it shows up
+   (list cards, the detail page); each context supplies its own
+   positioning (absolute over a thumbnail, inline next to a title, etc.)
+   rather than repeating this here. */
+.new-badge {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 7px 2px;
+  background: var(--badge-color, var(--primary));
+  color: var(--badge-color-on, var(--primary-on, #1a0d00));
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 5px;
+}
+
+/* A truncated-list overflow chip ("+N more") — dashed to read as "not a name, hover for the rest" at a glance, distinct from the solid chips around it. */
+.chip-more {
+  border-style: dashed;
+  color: var(--text-dim);
+  cursor: help;
+  transition: color .15s, border-color .15s;
+}
+.chip-more:hover {
+  color: var(--text-hi);
+  border-color: var(--tier-color, var(--primary));
+}
+
+/* Range-toggle chip group — used by the list page's Main/Extended
+   buttons and the stats page's All/Main/Extended filter, hence living
+   here rather than in either page's own stylesheet. */
+.range-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.range-chip {
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border: 1px solid var(--line);
+  background: var(--bg-surface);
+  color: var(--text-mid);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: color 0.15s, border-color 0.15s, background 0.15s, transform .15s;
+}
+.range-chip .mono { font-size: 11px; color: var(--text-dim); }
+.range-chip:hover { color: var(--text-hi); border-color: var(--text-dim); transform: translateY(-1px); }
+.range-chip:active { transform: translateY(0) scale(.96); }
+.range-chip.active { color: var(--primary-on, #1a0d00); background: var(--primary); border-color: var(--primary); }
+.range-chip.active .mono { color: var(--primary-on, #1a0d00); opacity: 0.7; }
+
+/* Dropdown filter panel — the list page's Verifier/Showcase-views
+   range filter and the stats page's matching filter (plus its channel
+   select), hence living here rather than in either page's stylesheet. */
+.filter-box { position: relative; flex: 0 0 auto; }
+
+.filter-toggle.active { color: var(--text-hi); border-color: var(--primary); }
+
+.filter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  margin-left: 6px;
+  padding: 0 4px;
+  border-radius: 100px;
+  background: var(--primary);
+  color: var(--primary-on, #1a0d00);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.filter-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 50;
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px 16px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-surface);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity .15s, transform .15s;
+}
+.filter-panel.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+.filter-range { display: flex; flex-direction: column; gap: 6px; }
+.filter-range > span {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.filter-range-inputs { display: flex; align-items: center; gap: 6px; }
+.filter-range-inputs span { color: var(--text-dim); font-size: 12px; }
+.filter-range-inputs input {
+  width: 0;
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--bg-surface-2);
+  color: var(--text-hi);
+  font-size: 12.5px;
+  font-family: ui-monospace, monospace;
+}
+.filter-range-inputs input:focus { outline: none; border-color: var(--primary); }
+.filter-range-inputs input::-webkit-outer-spin-button,
+.filter-range-inputs input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+.filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--text-mid);
+  cursor: pointer;
+}
+.filter-checkbox input { accent-color: var(--primary); width: 14px; height: 14px; }
+
+.filter-clear { align-self: flex-start; padding: 6px 12px; font-size: 11.5px; }
+
+/* A <select>, not a button, but styled to sit flush with the other
+   btn-ghost controls in the row — appearance:none strips the native
+   chrome (which ignores our colors on most platforms) in favor of a
+   custom arrow drawn as a background SVG. color-scheme:dark keeps the
+   *option list* dropdown dark too — that part can't be styled directly,
+   it's OS-rendered, but the UA respects color-scheme for its palette.
+   Used by the list page's Sort dropdown and the stats page's channel
+   filter, hence living here rather than in either page's stylesheet. */
+.sort-select {
+  appearance: none;
+  -webkit-appearance: none;
+  color-scheme: dark;
+  padding-right: 32px;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23999999' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+.sort-select:hover { background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23e6e6e6' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+
+.btn-ghost {
+  padding: 9px 16px;
+  border-radius: var(--radius);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-mid);
+  border: 1px solid var(--line);
+  transition: color .15s, border-color .15s, transform .15s;
+}
+.btn-ghost:hover:not(:disabled) { color: var(--text-hi); border-color: var(--text-dim); transform: translateY(-1px); }
+.btn-ghost:active:not(:disabled) { transform: translateY(0) scale(.96); }
+.btn-ghost:disabled { opacity: 0.4; cursor: default; }
+.btn-ghost:disabled:hover { color: var(--text-mid); }
+
+/* The one solid/filled button on the site — reserved for a page's single
+   clearest call to action (the home page's "View the list", the roulette
+   panel's "Spin") rather than every button, the same one-spot-color
+   discipline --primary already gets everywhere else. */
+.btn-primary {
+  padding: 11px 22px;
+  border-radius: var(--radius);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--primary-on, #1a0d00);
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  transition: filter .15s, transform .15s, box-shadow .15s;
+  box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--primary) 60%, transparent);
+}
+.btn-primary:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-1px); }
+.btn-primary:active:not(:disabled) { transform: translateY(0) scale(.97); }
+.btn-primary:disabled { opacity: 0.5; cursor: default; }
+
+.footer-note {
+  position: relative;
+  z-index: 1; /* stack above .detail-bg (level.html) — no effect on pages without one */
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 11.5px;
+  padding: 40px 20px 10px;
+  line-height: 1.7;
+}
+.footer-note a { color: var(--text-mid); text-decoration: underline; text-underline-offset: 2px; }
+
+/* =====================================================================
+   KEYBOARD SHORTCUTS — floating button + panel (js/shortcuts.js)
+   ===================================================================== */
+
+.shortcuts-fab {
+  position: fixed;
+  right: clamp(16px, 4vw, 32px);
+  bottom: clamp(16px, 4vw, 32px);
+  z-index: 60;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  font-weight: 700;
+  border: 1px solid var(--line);
+  background: var(--bg-surface);
+  color: var(--text-mid);
+  box-shadow: var(--shadow-card);
+  transition: color .15s, border-color .15s, transform .15s;
+}
+.shortcuts-fab:hover { color: var(--text-hi); border-color: var(--primary); transform: translateY(-2px); }
+.shortcuts-fab:active { transform: translateY(0) scale(.92); }
+
+/* Same shape as .shortcuts-fab above, mirrored to the bottom-left so the
+   two don't collide (js/back-to-top.js). Faded + click-through until
+   scrolled down a bit, rather than display:none/flex, so it animates in
+   both directions. */
+.back-to-top-fab {
+  position: fixed;
+  left: clamp(16px, 4vw, 32px);
+  bottom: clamp(16px, 4vw, 32px);
+  z-index: 60;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  background: var(--bg-surface);
+  color: var(--text-mid);
+  box-shadow: var(--shadow-card);
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease, color .15s, border-color .15s;
+}
+.back-to-top-fab.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.back-to-top-fab:hover { color: var(--text-hi); border-color: var(--primary); transform: translateY(-2px); }
+.back-to-top-fab.visible:active { transform: translateY(0) scale(.92); }
+
+/* Always in the DOM/layout, faded + click-through when closed — same
+   opacity+pointer-events transition .filter-panel already uses, rather
+   than a display:none/flex toggle, so *closing* animates too (a bare
+   display swap can't transition; it's just gone the next frame). */
+.shortcuts-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease;
+}
+.shortcuts-overlay.open { opacity: 1; pointer-events: auto; }
+
+.shortcuts-panel {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  padding: 22px 22px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-surface);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  transform: scale(0.94) translateY(8px);
+  transition: transform .2s cubic-bezier(.34, 1.56, .64, 1);
+}
+.shortcuts-overlay.open .shortcuts-panel { transform: scale(1) translateY(0); }
+
+.shortcuts-panel h2 { font-size: 15px; margin-bottom: 4px; }
+
+.shortcuts-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin: 0 0 16px;
+}
+
+.shortcuts-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.shortcuts-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.shortcuts-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text-mid);
+}
+
+.shortcuts-combo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.shortcuts-key {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 11.5px;
+  font-weight: 600;
+  min-width: 22px;
+  text-align: center;
+  padding: 3px 8px;
+  border-radius: 5px;
+  border: 1px solid var(--line);
+  background: var(--bg-surface-2);
+  color: var(--text-hi);
+}
+
+.shortcuts-plus { font-size: 11px; color: var(--text-dim); }
+
+/* =====================================================================
+   SETTINGS — gear icon + slide-in side panel (js/settings.js)
+   ===================================================================== */
+
+/* Same reasoning as .shortcuts-overlay above — opacity+pointer-events
+   transition rather than display:none/block, so the backdrop fades on
+   the way out too, not just in. The .settings-panel slide (below)
+   already animates both directions since it was transition-based
+   from the start, not a one-shot animation. */
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+.settings-overlay.open { opacity: 1; pointer-events: auto; }
+
+.settings-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 81;
+  width: min(340px, 90vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border-left: 1px solid var(--line);
+  box-shadow: -24px 0 60px rgba(0, 0, 0, 0.5);
+  transform: translateX(100%);
+  transition: transform .25s cubic-bezier(.16, 1, .3, 1);
+}
+.settings-overlay.open .settings-panel { transform: translateX(0); }
+
+.settings-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--line-soft);
+  flex-shrink: 0;
+}
+.settings-panel-head h2 { font-size: 16px; font-weight: 700; color: var(--text-hi); }
+
+.settings-body {
+  padding: 18px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  overflow-y: auto;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.settings-row-label { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.settings-row-label .settings-title { font-size: 13px; font-weight: 600; color: var(--text-hi); }
+.settings-row-label .settings-desc { font-size: 11.5px; color: var(--text-dim); line-height: 1.45; }
+
+.settings-divider { height: 1px; background: var(--line-soft); margin: -6px 0; }
+
+.settings-sync {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.settings-sync .settings-title { font-size: 13px; font-weight: 600; color: var(--text-hi); }
+.settings-sync .settings-desc { font-size: 11.5px; color: var(--text-dim); line-height: 1.45; }
+.settings-sync-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.settings-sync-form input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--bg-surface-2);
+  color: var(--text-hi);
+  font-size: 12.5px;
+}
+.settings-sync-form input:focus { outline: none; border-color: var(--primary); }
+.settings-sync-form button { padding: 8px 14px; font-size: 12px; flex-shrink: 0; }
+.settings-sync-footer {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 2px;
+}
+.settings-sync-status {
+  font-size: 11.5px;
+  color: var(--text-dim);
+  min-height: 1.2em;
+}
+.settings-link-btn {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--text-dim);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.settings-link-btn:hover { color: var(--text-hi); }
+.settings-clear-btn {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 8px 14px;
+  font-size: 12px;
+  color: #f87171;
+  border-color: color-mix(in srgb, #f87171 40%, var(--line));
+}
+.settings-clear-btn:hover { border-color: #f87171; color: #f87171; }
+
+.settings-note {
+  font-size: 11.5px;
+  color: var(--text-dim);
+  line-height: 1.5;
+  padding: 12px 14px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: var(--bg-surface-2);
+}
+
+/* Toggle switch */
+.settings-switch {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: 100px;
+  border: 1px solid var(--line);
+  background: var(--bg-surface-2);
+  transition: background .15s, border-color .15s;
+}
+.settings-switch.on { background: var(--primary); border-color: var(--primary); }
+.settings-switch .knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--text-hi);
+  transition: transform .15s, background .15s;
+}
+.settings-switch.on .knob { transform: translateX(18px); background: var(--primary-on, #1a0d00); }
+
+/* Two/three-way choice, same visual language as .range-chip but a
+   compact attached group rather than separate pill buttons — this is
+   a single setting's mutually exclusive options, not a filter row. */
+.settings-btn-group {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.settings-btn-opt {
+  padding: 6px 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-mid);
+  background: var(--bg-surface-2);
+  transition: background .15s, color .15s;
+}
+.settings-btn-opt:not(:last-child) { border-right: 1px solid var(--line); }
+.settings-btn-opt.active { background: var(--primary); color: var(--primary-on, #1a0d00); }
+.settings-btn-opt:hover:not(.active) { color: var(--text-hi); }
+
+/* Stacked variant (label above, control below, full width) — the accent
+   color swatches need more horizontal room than the settings panel's
+   usual side-by-side label+control row comfortably gives them. */
+.settings-row-stack { flex-direction: column; align-items: stretch; gap: 10px; }
+
+.settings-swatch-group { display: flex; flex-wrap: wrap; gap: 10px; }
+.settings-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--swatch-color);
+  border: 2px solid transparent;
+  box-shadow: 0 0 0 1px var(--line-soft);
+  transition: transform .15s, box-shadow .15s;
+}
+.settings-swatch:hover { transform: scale(1.1); }
+.settings-swatch.active { box-shadow: 0 0 0 2px var(--bg-surface), 0 0 0 4px var(--swatch-color); }
+
+/* --- toast (js/toast.js) --- */
+.toast-stack {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  padding: 11px 18px;
+  border-radius: 999px;
+  background: var(--bg-surface);
+  border: 1px solid var(--primary);
+  color: var(--text-hi);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateY(10px) scale(.96);
+  transition: opacity .25s ease, transform .25s cubic-bezier(.16,1,.3,1);
+  pointer-events: auto;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.toast.visible { opacity: 1; transform: translateY(0) scale(1); }
+@media (max-width: 480px) { .toast { white-space: normal; text-align: center; } }

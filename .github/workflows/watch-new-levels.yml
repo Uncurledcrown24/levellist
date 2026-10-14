@@ -1,0 +1,58 @@
+name: Watch for AREDL changes affecting the top 150
+
+# Polls AREDL's changelog for anything touching the tracked top 150 —
+# not just new placements, any Raised/Lowered/Swapped/MovedToLegacy in
+# range too, since all of those leave data/aredl-cache.json's cached
+# positions stale just as much as an addition would — and immediately
+# triggers refresh-aredl-cache.yml when it finds one. A *new placement*
+# specifically also triggers refresh-yt-cache.yml scoped to just that
+# level (so its verifier/showcase gets discovered right away instead of
+# waiting for the staggered daily queue to reach it) — a level that was
+# already in the top 150 and just moved doesn't need that, it already
+# has one on file. See scripts/watch-new-levels.mjs.
+#
+# Every 15 minutes rather than hourly like refresh-aredl-cache.yml — the
+# whole point is reacting quickly to a change, and checking is cheap
+# (one changelog page, not the full level list).
+#
+# Published to the `cache` branch, not `main` — see README's "Cache
+# branch" section and scripts/publish-cache-branch.sh.
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  actions: write # to dispatch refresh-aredl-cache.yml / refresh-yt-cache.yml below
+
+concurrency:
+  group: watch-new-levels
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch current watch state from the cache branch
+        run: |
+          git fetch origin cache
+          mkdir -p data
+          git show origin/cache:data/new-level-watch.json > data/new-level-watch.json 2>/dev/null || echo "No existing watch state found — starting fresh."
+
+      - name: Check for top-150 changes, trigger refreshes if found
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+          GIT_REF: main
+        run: node scripts/watch-new-levels.mjs
+
+      - name: Publish watch state to the cache branch
+        run: 'bash scripts/publish-cache-branch.sh "chore: update new-level watch state" data/new-level-watch.json'
