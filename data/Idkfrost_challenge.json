@@ -1,0 +1,18 @@
+{
+    "id": 104,
+    "name": "Idkfrost challenge",
+    "author": "UncurledCrown7",
+    "creators": ["UncurledCrown7"],
+    "verifier": "UncurledCrown7",
+    "verification": "https://youtu.be/3xYoXqnjX-M?si=36f12_jMNrDQ0bE_&t=104",
+    "percentToQualify": 50,
+    "password": "Free Copy",
+    "records": [
+        {
+            "user": "UncurledCrown7",
+            "link": "https://youtu.be/3xYoXqnjX-M?si=36f12_jMNrDQ0bE_&t=104",
+            "percent": 100,
+            "hz": 240
+        }
+    ]
+}
